@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 
 export default ComposedComponent => {
   class RequireAuthentication extends Component {
-    componentWillMount() {
+    componentDidMount() {
       // Here, we want to check to see if `this.props.authenticated` is true
       // If it isn't, then redirect the user back to the /signin page
       if (!this.props.authenticated) {

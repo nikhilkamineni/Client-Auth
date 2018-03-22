@@ -3,7 +3,7 @@ import { connect } from 'react-redux';
 import { logout } from '../actions';
 
 class SignOut extends Component {
-  componentWillMount() {
+  componentDidMount() {
     this.props.logout();
   }
 
