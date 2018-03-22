@@ -14,7 +14,7 @@ export const CHECK_IF_AUTHENTICATED = 'CHECK_IF_AUTHENTICATED';
 export const authError = error => {
   return {
     type: AUTHENTICATION_ERROR,
-    payload: error
+    payload: error,
   };
 };
 
@@ -28,7 +28,7 @@ export const register = (username, password, confirmPassword, history) => {
       .post(`${ROOT_URL}/users`, { username, password })
       .then(() => {
         dispatch({
-          type: USER_REGISTERED
+          type: USER_REGISTERED,
         });
         history.push('/signin');
       })
@@ -42,12 +42,11 @@ export const login = (username, password, history) => {
   return dispatch => {
     axios
       .post(`${ROOT_URL}/login`, { username, password })
-      .then((res) => {
-        // dispatch({
-        //   type: USER_AUTHENTICATED
-        // });
-        localStorage.setItem('token', res.data.token)
-        console.log()
+      .then(res => {
+        localStorage.setItem('token', res.data.token);
+        dispatch({
+          type: USER_AUTHENTICATED,
+        });
         history.push('/users');
       })
       .catch(() => {
@@ -58,30 +57,34 @@ export const login = (username, password, history) => {
 
 export const logout = () => {
   return dispatch => {
-    axios
-      .post(`${ROOT_URL}/logout`)
-      .then(() => {
-        dispatch({
-          type: USER_UNAUTHENTICATED
-        });
-      })
-      .catch(() => {
-        dispatch(authError('Failed to log you out'));
-      });
+    localStorage.removeItem('token');
+    dispatch({
+      type: USER_UNAUTHENTICATED,
+    });
+    // axios
+    //   .post(`${ROOT_URL}/logout`)
+    //   .then(() => {
+    //     localStorage.removeItem('token');
+    //     dispatch({
+    //       type: USER_UNAUTHENTICATED
+    //     });
+    //   })
+    //   .catch(() => {
+    //     dispatch(authError('Failed to log you out'));
+    //   });
   };
 };
 
 export const getUsers = () => {
   const token = localStorage.getItem('token');
-  const header = { headers: { "Authorization": token } };
-  console.log(header);
+  const header = { headers: { Authorization: token } };
   return dispatch => {
     axios
       .get(`${ROOT_URL}/users`, header)
       .then(response => {
         dispatch({
           type: GET_USERS,
-          payload: response.data
+          payload: response.data,
         });
       })
       .catch(() => {
