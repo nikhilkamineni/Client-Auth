@@ -2,7 +2,7 @@ import axios from 'axios';
 // Fixes an issue with axios and express-session where sessions
 // would not persist between routes
 axios.defaults.withCredentials = true;
-const ROOT_URL = 'http://localhost:5000';
+const ROOT_URL = 'http://localhost:5000/api';
 
 export const USER_REGISTERED = 'USER_REGISTERED';
 export const USER_AUTHENTICATED = 'USER_AUTHENTICATED';
@@ -42,10 +42,12 @@ export const login = (username, password, history) => {
   return dispatch => {
     axios
       .post(`${ROOT_URL}/login`, { username, password })
-      .then(() => {
-        dispatch({
-          type: USER_AUTHENTICATED
-        });
+      .then((res) => {
+        // dispatch({
+        //   type: USER_AUTHENTICATED
+        // });
+        localStorage.setItem('token', res.data.token)
+        console.log()
         history.push('/users');
       })
       .catch(() => {
@@ -70,9 +72,12 @@ export const logout = () => {
 };
 
 export const getUsers = () => {
+  const token = localStorage.getItem('token');
+  const header = { headers: { "Authorization": token } };
+  console.log(header);
   return dispatch => {
     axios
-      .get(`${ROOT_URL}/restricted/users`)
+      .get(`${ROOT_URL}/users`, header)
       .then(response => {
         dispatch({
           type: GET_USERS,
